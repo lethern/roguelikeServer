@@ -1,29 +1,15 @@
 const express = require("express");
 const { createServer } = require("http");
-const { WebSocketServer, WebSocket } = require("ws");
+const { WebSocketServer } = require("ws");
 
 const app = express();
 const server = createServer(app);
 const port = process.env.PORT || 10000;
 
-const wss = new WebSocketServer({ noServer: true });
+const wss = new WebSocketServer({ server });
 
-// HTTP endpoint just for Render's port scanner
 app.get("/", (req, res) => {
 	res.status(200).send("server is running");
-});
-
-server.on("upgrade", (request, socket, head) => {
-	const pathname = request.url.split("?")[0];
-	console.log(`upgrade request for path: ${pathname}`);
-
-	if (pathname === "/ws" || pathname === "/ws/") {
-		wss.handleUpgrade(request, socket, head, (ws) => {
-			wss.emit("connection", ws, request);
-		});
-	} else {
-		socket.destroy();
-	}
 });
 
 wss.on("connection", (ws) => {
@@ -42,6 +28,6 @@ wss.on("connection", (ws) => {
 	});
 });
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
 	console.log(`server listening on port ${port}`);
 });
