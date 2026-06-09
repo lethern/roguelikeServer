@@ -1,7 +1,13 @@
 const WebSocket = require("ws");
 
 const port = process.env.PORT || 10000;
-const server = require("http").createServer();
+
+// a http server just for Render's port scanner
+const server = require("http").createServer((req, res) => {
+	res.writeHead(200, { "Content-Type": "text/plain" });
+	res.end("Server is running");
+});
+
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", ws => {
