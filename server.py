@@ -1,13 +1,22 @@
 import asyncio
 import os
 import websockets
+import json
 
 connected_clients = set()
+
+SERVER_CREDENTIAL = {
+    "credential": os.environ.get("TURN_CREDENTIAL", "")
+}
 
 async def handler(websocket):
     connected_clients.add(websocket)
     print(f"client connected")
     try:
+        await websocket.send(json.dumps({
+            "type": "credentials",
+            **SERVER_CREDENTIAL
+        }))
         async for message in websocket:
             for client in connected_clients:
                 if client != websocket:
