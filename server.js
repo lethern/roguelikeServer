@@ -15,6 +15,6 @@ wss.on("connection", ws => {
 	});
 });
 
-server.listen(port, () => {
-	console.log("running on", port);
+server.listen(port, "0.0.0.0", () => {
+	console.log(`Server is listening on 0.0.0.0:${port}`);
 });
