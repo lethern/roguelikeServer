@@ -59,6 +59,7 @@ async def handler(websocket):
         connected_clients.discard(websocket)
         print("client disconnected")
 
+
 async def main():
     port = int(os.environ.get("PORT", 10000))
 
@@ -67,10 +68,12 @@ async def main():
         "0.0.0.0",
         port,
         ping_interval=20,
-        ping_timeout=20
+        ping_timeout=20,
+        origins=None
     ):
         print(f"server running on port {port}")
         await asyncio.Future()
+
 
 if __name__ == "__main__":
     asyncio.run(main())
