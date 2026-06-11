@@ -15,4 +15,4 @@ COPY server.py .
 EXPOSE 10000
 
 # 6. Run the script directly
-CMD ["python", "server.py"]
+CMD ["sh", "-c", "ls -la /app && echo RUNNING && python -u server.py"]
