@@ -2,10 +2,8 @@ import asyncio
 import os
 import websockets
 import json
-import traceback
 
 connected_clients = set()
-master_client = None
 
 SERVER_CREDENTIAL = {
     "credential": os.environ.get("TURN_CREDENTIAL", "")
@@ -20,20 +18,12 @@ async def safe_send(client, message):
         return False
 
 async def handler(websocket):
-    global master_client
     connected_clients.add(websocket)
-    
-    if master_client is None:
-        master_client = websocket
-        is_master = True
-    else:
-        is_master = False
 
     try:
         try:
             await websocket.send(json.dumps({
                 "type": "credentials",
-                "master": is_master,
                 **SERVER_CREDENTIAL
             }))
         except Exception:
@@ -51,21 +41,15 @@ async def handler(websocket):
             
             for client in dead_clients:
                 connected_clients.discard(client)
-                if master_client == client:
-                    master_client = next(iter(connected_clients)) if connected_clients else None
 
     except websockets.exceptions.ConnectionClosed:
         print(f"connection closed: {e.code} {e.reason}")
-
     except Exception:
         print("UNHANDLED EXCEPTION")
         print(traceback.format_exc())
     finally:
         connected_clients.discard(websocket)
         print("client disconnected")
-        if master_client == websocket:
-            master_client = next(iter(connected_clients)) if connected_clients else None
-
 
 async def main():
     port = int(os.environ.get("PORT", 10000))
@@ -79,7 +63,6 @@ async def main():
     ):
         print(f"server running on port {port}")
         await asyncio.Future()
-
 
 if __name__ == "__main__":
     asyncio.run(main())
