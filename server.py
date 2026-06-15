@@ -24,9 +24,10 @@ async def handler(websocket):
         try:
             await websocket.send(json.dumps({
                 "type": "credentials",
+                "server": True,
                 **SERVER_CREDENTIAL
             }))
-        except Exception:
+        except Exception as e:
             print(f"failed sending credentials: {e}")
 
         async for message in websocket:
